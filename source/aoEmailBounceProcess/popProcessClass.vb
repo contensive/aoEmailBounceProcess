@@ -4,6 +4,7 @@ Option Strict On
 
 Imports Contensive.BaseClasses
 Imports Contensive.Addons
+Imports OpenPop
 
 Namespace Contensive.Addons.aoEmailBounce
     Public Class popProcessClass
