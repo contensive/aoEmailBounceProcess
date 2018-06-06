@@ -106,7 +106,7 @@ namespace Contensive.Addons.aoEmailBounce
                     {
                         do
                         {
-                            permanentFail(cp, cs.GetText("name"),  DateTime.Now.ToString() + " converted from transient to permanent because grace period past with no action, original failure[" + cs.GetText("detail") + "]" );
+                            permanentFail(cp, cs.GetText("name"),  DateTime.Now.ToString() + " converted from transient to permanent because grace period past with no action, original failure[" + cs.GetText("details") + "]" );
                             cs.GoNext();
                         } while (cs.OK());
                     }
