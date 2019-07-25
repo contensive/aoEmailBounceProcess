@@ -119,6 +119,7 @@ namespace Contensive.Addons.aoEmailBounce
                 if (!string.IsNullOrEmpty(message.Bounce.BounceSubType))
                 {
                     cp.Utils.AppendLog("permanentFailMessages#10", "permanentFailMessages=10" + bounceMsg);
+                    cp.Utils.AppendLog("permanentFailMessages#11", "permanentFailMessages=11, message.Bounce.BouncedRecipients.count [" + message.Bounce.BouncedRecipients + "]");
                     bounceMsg += ", " + message.Bounce.BounceSubType;
                 }
                 switch (message.Bounce.BounceType)
