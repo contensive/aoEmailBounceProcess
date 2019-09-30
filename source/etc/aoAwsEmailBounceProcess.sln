@@ -7,7 +7,7 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "aoEmailBounceProcess", "aoE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pop3", "receiveClientLibrary\Pop3.csproj", "{6EB93AE3-CBF9-4EBA-973E-D3C9B58D716C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoAwsSesBounceProcess", "aoAwsSesBounceProcess\aoAwsSesBounceProcess.csproj", "{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoAwsEmailBounceProcess", "aoAwsSesBounceProcess\aoAwsEmailBounceProcess.csproj", "{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

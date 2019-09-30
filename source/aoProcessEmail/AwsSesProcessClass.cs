@@ -24,13 +24,13 @@ namespace Contensive.Addons.aoEmailBounce
         /// <returns></returns>
         public override object Execute(Contensive.BaseClasses.CPBaseClass cp)
         {
-            cp.Utils.AppendLog("permanentFailMessages#1", "permanentFailMessages=1" );
+            cp.Utils.AppendLog( "permanentFailMessages=1" );
             string returnEmpty = "";
             DateTime rightNowDate = DateTime.Now;
             string logDatePart = rightNowDate.Year + rightNowDate.Month.ToString().PadLeft(2) + rightNowDate.Day.ToString().PadLeft(2);
             try
             {
-                cp.Utils.AppendLog("permanentFailMessages#2", "permanentFailMessages=2");
+                cp.Utils.AppendLog("permanentFailMessages=2");
                 // site properties
                 //
                 //cp.Utils.AppendLog("emailBounce\\" + logDatePart + ".log", "start");
@@ -42,7 +42,7 @@ namespace Contensive.Addons.aoEmailBounce
                 bool awsAllowBounceProcess = cp.Site.GetBoolean("AWS SES Allow Bounce Process");
                 if (awsAllowBounceProcess) 
                 {
-                    cp.Utils.AppendLog("permanentFailMessages#3", "permanentFailMessages=3");
+                    cp.Utils.AppendLog( "permanentFailMessages=3");
                     string awsSecretAccessKey = cp.Site.GetText(spAwsSecretAccessKey);
                     string awsAccessKeyId = cp.Site.GetText(spAwsAccessKeyId);
                     string awsSQSBounceEmailQueueEndpoint = cp.Site.GetText(spAwsSQSBounceEmailQueueEndpoint);
@@ -52,35 +52,37 @@ namespace Contensive.Addons.aoEmailBounce
                     //AmazonSQSConfig sqsConfig = new AmazonSQSConfig();
                     //sqsConfig.ServiceURL = awsServiceUrl;
                     AmazonSQSClient sqsClient = new AmazonSQSClient(awsAccessKeyId, awsSecretAccessKey, Amazon.RegionEndpoint.USEast1);
-                    ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest();
-                    receiveMessageRequest.QueueUrl = awsSQSBounceEmailQueueEndpoint;
-                    receiveMessageRequest.MaxNumberOfMessages = 10;
+                    ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest {
+                        QueueUrl = awsSQSBounceEmailQueueEndpoint,
+                        MaxNumberOfMessages = 10
+                    };
                     while (true)
                     {
-                        cp.Utils.AppendLog("permanentFailMessages#4", "permanentFailMessages=4");
+                        cp.Utils.AppendLog( "permanentFailMessages=4");
                         ReceiveMessageResponse receiveMessageResponse = sqsClient.ReceiveMessage(receiveMessageRequest);
                         if (receiveMessageResponse.Messages.Count == 0) break;                //
                         foreach (Message msg in receiveMessageResponse.Messages)
                         {
-                            cp.Utils.AppendLog("permanentFailMessages#5", "permanentFailMessages=5" + msg.Body);
+                            cp.Utils.AppendLog( "permanentFailMessages=5" + msg.Body);
                             // First, convert the Amazon SNS message into a JSON object.
                             AmazonSqsNotification notification = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSqsNotification>(msg.Body);
-                            cp.Utils.AppendLog("permanentFailMessages#6", "permanentFailMessages=6" + notification.Type);
-                            if (notification.Type == "Notification")
+                            cp.Utils.AppendLog("permanentFailMessages=6" + notification.type);
+                            if (notification.type == "Notification")
                             {
-                                cp.Utils.AppendLog("permanentFailMessages#7.1", "permanentFailMessages=7");
+                                cp.Utils.AppendLog( "permanentFailMessages=7");
                                 // Now access the Amazon SES bounce notification.
-                                AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(notification.Message);
+                                AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(notification.message);
                                 processAmazonSesBounceNotificationMessage(cp, message);
-                            } else if (notification.Type == null)
+                            } else if (notification.type == null)
                             {
-                                cp.Utils.AppendLog("permanentFailMessages#7.2", "permanentFailMessages=7");
+                                cp.Utils.AppendLog( "permanentFailMessages=7");
                                 AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(msg.Body);
                                 processAmazonSesBounceNotificationMessage(cp, message);
                             }
-                            var deleteMessageRequest = new DeleteMessageRequest();
-                            deleteMessageRequest.QueueUrl = awsSQSBounceEmailQueueEndpoint;
-                            deleteMessageRequest.ReceiptHandle = msg.ReceiptHandle;
+                            var deleteMessageRequest = new DeleteMessageRequest {
+                                QueueUrl = awsSQSBounceEmailQueueEndpoint,
+                                ReceiptHandle = msg.ReceiptHandle
+                            };
                             sqsClient.DeleteMessage(deleteMessageRequest);
                         }
                     }
@@ -111,34 +113,34 @@ namespace Contensive.Addons.aoEmailBounce
         //
         private static void processAmazonSesBounceNotificationMessage(CPBaseClass cp, AmazonSesBounceNotification message)
         {
-            cp.Utils.AppendLog("permanentFailMessages#8", "permanentFailMessages=8" + message.NotificationType);
-            if (message.NotificationType == "Bounce")
+            cp.Utils.AppendLog("permanentFailMessages=8" + message.notificationType);
+            if (message.notificationType == "Bounce")
             {
-                cp.Utils.AppendLog("permanentFailMessages#9", "permanentFailMessages=9" + message.NotificationType);
-                string bounceMsg = message.Bounce.Timestamp.ToString() + " AWS email bounce notification, type: " + message.Bounce.BounceType;
-                if (!string.IsNullOrEmpty(message.Bounce.BounceSubType))
+                cp.Utils.AppendLog( "permanentFailMessages=9" + message.notificationType);
+                string bounceMsg = message.bounce.timestamp.ToString() + " AWS email bounce notification, type: " + message.bounce.bounceType;
+                if (!string.IsNullOrEmpty(message.bounce.bounceSubType))
                 {
-                    cp.Utils.AppendLog("permanentFailMessages#10", "permanentFailMessages=10" + bounceMsg);
-                    cp.Utils.AppendLog("permanentFailMessages#11", "permanentFailMessages=11, message.Bounce.BouncedRecipients.count [" + message.Bounce.BouncedRecipients + "]");
-                    bounceMsg += ", " + message.Bounce.BounceSubType;
+                    cp.Utils.AppendLog( "permanentFailMessages=10" + bounceMsg);
+                    cp.Utils.AppendLog("permanentFailMessages=11, message.Bounce.BouncedRecipients.count [" + message.bounce.bouncedRecipients + "]");
+                    bounceMsg += ", " + message.bounce.bounceSubType;
                 }
-                switch (message.Bounce.BounceType)
+                switch (message.bounce.bounceType)
                 {
                     case "Transient":
                         // Remove all recipients that generated a permanent bounce 
                         // or an unknown bounce.
-                        foreach (var recipient in message.Bounce.BouncedRecipients)
+                        foreach (var recipient in message.bounce.bouncedRecipients)
                         {
-                            transientFail(cp, recipient.EmailAddress, bounceMsg);
+                            transientFail(cp, recipient.emailAddress, bounceMsg);
                         }
                         break;
                     default:
                         // Remove all recipients that generated a permanent bounce 
                         // or an unknown bounce.
-                        foreach (var recipient in message.Bounce.BouncedRecipients)
+                        foreach (var recipient in message.bounce.bouncedRecipients)
                         {
-                            permanentFail(cp, recipient.EmailAddress, bounceMsg);
-                            cp.Utils.AppendLog("permanentFailMessages", "permanentFailMessages=" + recipient.EmailAddress);
+                            permanentFail(cp, recipient.emailAddress, bounceMsg);
+                            cp.Utils.AppendLog( "permanentFailMessages=" + recipient.emailAddress);
                         }
                         break;
                 }
@@ -155,7 +157,7 @@ namespace Contensive.Addons.aoEmailBounce
             //
             // clear allowBulkEmail
             //
-            cp.Db.ExecuteSQL("update ccmembers set allowBulkEmail=0 where email=" + cp.Db.EncodeSQLText(emailAddress));
+            cp.Db.ExecuteNonQuery("update ccmembers set allowBulkEmail=0 where email=" + cp.Db.EncodeSQLText(emailAddress));
             //
             // add or update email bounce list
             //
@@ -179,9 +181,9 @@ namespace Contensive.Addons.aoEmailBounce
             //
             // add to server's block list, "(programfiles)\config\SMTPBlockList_(appName).txt", vbcrlf + emailAddress + vbTab + dateTime
             //
-            string filename = cp.Site.PhysicalInstallPath + "\\config\\SMTPBlockList_" + cp.Site.Name + ".txt";
-            string blockList = cp.File.Read(filename);
-            cp.File.Save(filename, blockList + "\n\r" + emailAddress + "\t" + DateTime.Now.ToString());
+            string filename = "\\config\\SMTPBlockList_" + cp.Site.Name + ".txt";
+            string blockList = cp.CdnFiles.Read(filename);
+            cp.CdnFiles.Save(filename, blockList + "\n\r" + emailAddress + "\t" + DateTime.Now.ToString());
         }
         //==========================================================================================
         /// <summary>
@@ -252,29 +254,29 @@ namespace Contensive.Addons.aoEmailBounce
         /// <summary>Represents the bounce or complaint notification stored in Amazon SQS.</summary>
         class AmazonSqsNotification
         {
-            public string Type { get; set; }
-            public string Message { get; set; }
+            public string type { get; set; }
+            public string message { get; set; }
         }
 
         /// <summary>Represents an Amazon SES bounce notification.</summary>
         class AmazonSesBounceNotification
         {
-            public string NotificationType { get; set; }
-            public AmazonSesBounce Bounce { get; set; }
+            public string notificationType { get; set; }
+            public AmazonSesBounce bounce { get; set; }
         }
         /// <summary>Represents meta data for the bounce notification from Amazon SES.</summary>
         class AmazonSesBounce
         {
-            public string BounceType { get; set; }
-            public string BounceSubType { get; set; }
-            public DateTime Timestamp { get; set; }
-            public List<AmazonSesBouncedRecipient> BouncedRecipients { get; set; }
+            public string bounceType { get; set; }
+            public string bounceSubType { get; set; }
+            public DateTime timestamp { get; set; }
+            public List<AmazonSesBouncedRecipient> bouncedRecipients { get; set; }
         }
         /// <summary>Represents the email address of recipients that bounced
         /// when sending from Amazon SES.</summary>
         class AmazonSesBouncedRecipient
         {
-            public string EmailAddress { get; set; }
+            public string emailAddress { get; set; }
         }
     }
 }

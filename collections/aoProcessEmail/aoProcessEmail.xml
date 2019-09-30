@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<Collection name="Amazon SES Email" guid="{321EB147-D85F-4537-8768-A16067C5AD17}" system="No" updatable="Yes" blockNavigatorNode="No">
+<Collection name="Process Email" guid="{321EB147-D85F-4537-8768-A16067C5AD17}" system="No" updatable="Yes" blockNavigatorNode="No">
 	<HelpLink>http://wiki.kmacloud.net/index.php?title=Email_Bounce_Processing</HelpLink>
 	<Help></Help>
 	<Addon name="AWS SES Email Bounce Process" guid="{279DEE1C-1FC9-46E9-99C3-A6CA05954352}" type="Add-on">

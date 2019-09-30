@@ -25,38 +25,38 @@ namespace Pop3
  
 		private Pop3Message m_pop3Message = null;
 
-		public Pop3Credential UserDetails
+		public Pop3Credential userDetails
 		{
 			set { m_credential = value; }
 			get { return m_credential; }
 		}
 
-		public string From
+		public string from
 		{
 			get { return m_pop3Message.From; }
 		}
 
-		public string To
+		public string to
 		{
 			get { return m_pop3Message.To; }
 		}
 
-		public string Subject
+		public string subject
 		{
 			get { return m_pop3Message.Subject; }
 		}
 
-		public string Body
+		public string body
 		{
 			get { return m_pop3Message.Body; }
 		}
 
-		public IEnumerator MultipartEnumerator
+		public IEnumerator multipartEnumerator
 		{
 			get { return m_pop3Message.MultipartEnumerator; }
 		}
 
-		public bool IsMultipart
+		public bool isMultipart
 		{
 			get { return m_pop3Message.IsMultipart; }
 		}
@@ -76,7 +76,7 @@ namespace Pop3
 				IPHostEntry hostEntry = null;
         
 				// Get host related information.
-				hostEntry = Dns.Resolve(m_credential.Server);
+				hostEntry = Dns.GetHostEntry(m_credential.Server);
 
 				// Loop through the AddressList to obtain the supported 
 				// AddressFamily. This is to avoid an exception that 
@@ -228,7 +228,7 @@ namespace Pop3
 			}
 		}
 
-		public long MessageCount
+		public long messageCount
 		{
 			get 
 			{
@@ -258,7 +258,7 @@ namespace Pop3
 		}
 
 
-		public void CloseConnection()
+		public void closeConnection()
 		{			
 			Send("quit");
 
@@ -266,7 +266,7 @@ namespace Pop3
 			m_pop3Message = null;
 		}
 
-		public bool DeleteEmail()
+		public bool deleteEmail()
 		{
 			bool ret = false;
 
@@ -283,14 +283,14 @@ namespace Pop3
 			return ret;
 		}
 
-		public bool NextEmail(long directPosition)
+		public bool nextEmail(long directPosition)
 		{
 			bool ret;
 
 			if( directPosition >= 0 )
 			{
 				m_directPosition = directPosition;
-				ret = NextEmail();
+				ret = nextEmail();
 			}
 			else
 			{
@@ -300,7 +300,7 @@ namespace Pop3
 			return ret;
 		}
 
-		public bool NextEmail()
+		public bool nextEmail()
 		{
 			string returned;
 
@@ -353,7 +353,7 @@ namespace Pop3
 			return true;
 		}
 
-		public void OpenInbox()
+		public void openInbox()
 		{
 			// get a socket ...
 			m_socket = GetClientSocket();

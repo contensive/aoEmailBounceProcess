@@ -7,10 +7,10 @@ Imports Contensive.Addons
 Imports OpenPop
 
 Namespace Contensive.Addons.aoEmailBounce
-    Public Class popProcessClass
+    Public Class PopProcessClass
         Inherits AddonBaseClass
         '
-        Dim strBuffer As String
+        Private ReadOnly strBuffer As String
         '
         '===========================================================================================
         ''' <summary>
@@ -32,23 +32,23 @@ Namespace Contensive.Addons.aoEmailBounce
         '
         Public Sub bounceProcess(cp As Contensive.BaseClasses.CPBaseClass)
             Try
-                Dim popClient As Pop3.Pop3Client
+                'Dim popClient As Pop3.Pop3Client
                 Dim CS As CPCSBaseClass = cp.CSNew()
-                Dim Ptr As Integer
+                'Dim Ptr As Integer
                 'Dim Copy As String
                 Dim MessageText As String
                 Dim MessageHeaders As String
-                Dim MessageUID As String
+                'Dim MessageUID As String
                 Dim FilterLines() As String
-                Dim FilterText() As String
-                Dim FilterType() As Integer
+                Dim FilterText() As String = {}
+                Dim FilterType() As Integer = {}
                 'Dim FS As New FileSystemClass
                 Dim LinePtr As Integer
                 Dim LineSplit() As String
                 Dim FilterLineCnt As Integer
                 Dim Filter As String
                 Dim BounceType As Integer
-                Dim SQL As String
+                'Dim SQL As String
                 Dim EmailAddress As String
                 Dim PopServer As String
                 Dim popPort As Integer
@@ -59,34 +59,34 @@ Namespace Contensive.Addons.aoEmailBounce
                 Dim bounceLogPathPage As String
                 Dim ActionTaken As String
                 Dim FilterFilename As String
-                Dim Filename As String
+                Dim Filename As String = ""
                 Dim rightNowDate As Date = Now.Date
                 Dim logDatePart As String = rightNowDate.Year & rightNowDate.Month.ToString.PadLeft(2) & rightNowDate.Day.ToString.PadLeft(2)
                 Dim amazonMsg As String = "An error occurred while trying to deliver the mail to the following recipients:" & vbCrLf
                 '
-                AllowEmailBounceProcessing = cp.Site.GetBoolean("AllowEmailBounceProcessing", "0")
+                AllowEmailBounceProcessing = cp.Site.GetBoolean("AllowEmailBounceProcessing", False)
                 If AllowEmailBounceProcessing Then
                     PopServer = cp.Site.GetText("PopServer", "")
-                    popPort = cp.Site.GetInteger("popServerPort", "110")
+                    popPort = cp.Site.GetInteger("popServerPort", 110)
                     If popPort <= 0 Then
                         popPort = 110
                     End If
                     POPServerUsername = cp.Site.GetText("POPServerUsername", "")
                     POPServerPassword = cp.Site.GetText("POPServerPassword", "")
                     If (PopServer = "") Or (POPServerUsername = "") Or (POPServerPassword = "") Then
-                        Call cp.Utils.AppendLogFile("AllowEmailBounceProcessing true but server, username or password is blank")
+                        Call cp.Utils.AppendLog("AllowEmailBounceProcessing true but server, username or password is blank")
                     Else
                         bounceLogPathPage = "BounceLog\" & logDatePart & "\trace.txt"
-                        FilterFilename = cp.Site.PhysicalInstallPath & "\config\EmailBounceFilters.txt"
-                        EmailBounceProcessAction = cp.Site.GetInteger("EmailBounceProcessAction", "0")
+                        FilterFilename = "\config\EmailBounceFilters.txt"
+                        EmailBounceProcessAction = cp.Site.GetInteger("EmailBounceProcessAction", 0)
                         '
                         ' Read in the filter file
                         '
                         If True Then
                             Dim copy As String
-                            copy = cp.File.Read(FilterFilename)
+                            copy = cp.CdnFiles.Read(FilterFilename)
                             If copy = "" Then
-                                Call cp.Utils.AppendLogFile("Bounce processing filters file \config\EmailBounceFilters.txt is empty")
+                                Call cp.Utils.AppendLog("Bounce processing filters file \config\EmailBounceFilters.txt is empty")
                             Else
                                 copy = Replace(copy, vbCrLf, vbLf)
                                 copy = Replace(copy, vbCr, vbLf)
@@ -127,7 +127,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                 pop.Authenticate(POPServerUsername, POPServerPassword)
                                 MessageCnt = pop.GetMessageCount()
                                 '
-                                cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "New bounce emails, cnt=" & MessageCnt)
+                                cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "New bounce emails, cnt=" & MessageCnt)
                                 '
                                 For msgPtr As Integer = 1 To MessageCnt
                                     msg = pop.GetMessage(msgPtr)
@@ -137,7 +137,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                     MessageText = ""
                                     If Not msg.Headers.From.HasValidMailAddress Then
                                         '
-                                        cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email address not found")
+                                        cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email address not found")
                                         '
                                     Else
                                         EmailAddress = msg.Headers.From.Address
@@ -160,7 +160,7 @@ Namespace Contensive.Addons.aoEmailBounce
 
                                         If String.IsNullOrEmpty(MessageText) Then
                                             '
-                                            cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email has blank body")
+                                            cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email has blank body")
                                             '
                                         Else
                                             '
@@ -177,13 +177,13 @@ Namespace Contensive.Addons.aoEmailBounce
                                             MessageHeaders = "" ' POP1.MessageHeaders
                                             If EmailAddress = "" Then
                                                 '
-                                                cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email address was blank")
+                                                cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email address was blank")
                                                 '
                                                 ActionTaken = "deleted with no action, email address could not be determined, email content saved [" & Filename & "]"
                                             Else
                                                 If FilterLineCnt = 0 Then
                                                     '
-                                                    cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email filter file was not found (" & FilterFilename & ")")
+                                                    cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & "email filter file was not found (" & FilterFilename & ")")
                                                     '
                                                     ActionTaken = "[" & EmailAddress & "], deleted with no action, no Filter File [" & FilterFilename & "]"
                                                 Else
@@ -222,7 +222,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                                                                 ' clear allowgroupemail
                                                                                 '
                                                                                 ActionTaken = "[" & EmailAddress & "], clear allowBulkEmail action, Filter [" & Filter & "] is hard error"
-                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), , , "ID,Name,OrganizationID,allowbulkemail")
+                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), "", True, "ID,Name,OrganizationID,allowbulkemail")
                                                                                 If Not (CS.OK) Then
                                                                                     ActionTaken &= ", NO RECORD FOUND"
                                                                                 Else
@@ -240,7 +240,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                                                                 ' clear email
                                                                                 '
                                                                                 ActionTaken = "[" & EmailAddress & "], clear email address action, Filter [" & Filter & "] is hard error"
-                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), , , "ID,Name,OrganizationID,email")
+                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), "", True, "ID,Name,OrganizationID,email")
                                                                                 If Not CS.OK Then
                                                                                     ActionTaken &= ", NO RECORD FOUND"
                                                                                 Else
@@ -257,7 +257,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                                                                 ' Delete Member
                                                                                 '
                                                                                 ActionTaken = "[" & EmailAddress & "], delete member, Filter [" & Filter & "] is hard error"
-                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), , , "ID,Name,OrganizationID")
+                                                                                Call CS.Open("people", "email=" & cp.Db.EncodeSQLText(EmailAddress), "", True, "ID,Name,OrganizationID")
                                                                                 If Not CS.OK Then
                                                                                     ActionTaken &= ", NO RECORD FOUND"
                                                                                 Else
@@ -278,7 +278,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                                                         End Select
                                                                 End Select
                                                                 '
-                                                                cp.File.AppendVirtual(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & ActionTaken)
+                                                                cp.CdnFiles.Append(bounceLogPathPage, vbCrLf & "email" & msgPtr & "-" & ActionTaken)
                                                                 '
                                                                 Exit For
                                                             End If
@@ -292,7 +292,7 @@ Namespace Contensive.Addons.aoEmailBounce
                                     '
                                     ' save bounced email
                                     '
-                                    Call cp.File.SaveVirtual("BounceLog\" & logDatePart & "\email-" & msgPtr & ".txt", EmailAddress & vbCrLf & headerList & vbCrLf & MessageText)
+                                    Call cp.CdnFiles.Save("BounceLog\" & logDatePart & "\email-" & msgPtr & ".txt", EmailAddress & vbCrLf & headerList & vbCrLf & MessageText)
                                     '
                                     ' delete the message
                                     '
@@ -358,8 +358,8 @@ Namespace Contensive.Addons.aoEmailBounce
         '
         '
         '
-        Private Function GetEmailAddress(cp As CPBaseClass, MessageText As String) As String
-            GetEmailAddress = ""
+        Private Function getEmailAddress(cp As CPBaseClass, MessageText As String) As String
+            getEmailAddress = ""
             Dim Pos As Integer
             Dim EOL As Integer
             '
@@ -367,9 +367,9 @@ Namespace Contensive.Addons.aoEmailBounce
             If Pos <> 0 Then
                 EOL = InStr(Pos, MessageText, vbCrLf)
                 If EOL <> 0 Then
-                    GetEmailAddress = Mid(MessageText, Pos + 16, EOL - (Pos + 16))
-                    GetEmailAddress = Replace(GetEmailAddress, "rfc822;", "", 1, 99, vbTextCompare)
-                    GetEmailAddress = Trim(GetEmailAddress)
+                    getEmailAddress = Mid(MessageText, Pos + 16, EOL - (Pos + 16))
+                    getEmailAddress = Replace(getEmailAddress, "rfc822;", "", 1, 99, vbTextCompare)
+                    getEmailAddress = Trim(getEmailAddress)
                 End If
             End If
         End Function
