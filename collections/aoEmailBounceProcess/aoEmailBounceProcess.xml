@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<Collection name="Process Email" guid="{321EB147-D85F-4537-8768-A16067C5AD17}" system="No" updatable="Yes" blockNavigatorNode="No">
+<Collection name="Email Bounce Process" guid="{321EB147-D85F-4537-8768-A16067C5AD17}" system="No" updatable="Yes" blockNavigatorNode="No">
 	<HelpLink>http://wiki.kmacloud.net/index.php?title=Email_Bounce_Processing</HelpLink>
 	<Help></Help>
 	<Addon name="AWS SES Email Bounce Process" guid="{279DEE1C-1FC9-46E9-99C3-A6CA05954352}" type="Add-on">
 		<Copy></Copy>
 		<CopyText></CopyText>
 		<ActiveXProgramID></ActiveXProgramID>
-		<DotNetClass><![CDATA[Contensive.Addons.aoEmailBounce.AwsSesProcessClass]]></DotNetClass>
+		<DotNetClass><![CDATA[Contensive.Addons.EmailBounceProcess.AwsSesProcessClass]]></DotNetClass>
 		<ArgumentList></ArgumentList>
 		<AsAjax>No</AsAjax>
 		<Filter>No</Filter>
@@ -42,7 +42,7 @@
 		<Copy></Copy>
 		<CopyText></CopyText>
 		<ActiveXProgramID></ActiveXProgramID>
-		<DotNetClass><![CDATA[Contensive.Addons.aoEmailBounce.popProcessClass]]></DotNetClass>
+		<DotNetClass><![CDATA[Contensive.Addons.EmailBounceProcess.PopProcessClass]]></DotNetClass>
 		<ArgumentList></ArgumentList>
 		<AsAjax>No</AsAjax>
 		<Filter>No</Filter>
@@ -88,16 +88,16 @@
 		<InIframe>No</InIframe>
 		<BlockEditTools>No</BlockEditTools>
 		<FormXML><![CDATA[<Form>
-	<Description></Description>
-	<Tab name="AWS" description="Settings that affect the AWS Bounce and Complaint notification handling.">
-		<SiteProperty caption="Allow AWS Email Bounce Processing" name="AWS SES Allow Bounce Process" ReadOnly="false" Type="boolean" Selector="" Description="(For Amazon AWS hosted sites only, requires Amazon SES Email) Use Amazon Notifications to automatically block bad email addresses from your database. When enabled, the site will check with Amazon AWS hourly and if bad email addresses where detected, the user's Allow Group Email will be disabled and the email address will be added to the site's blocked list.">0</SiteProperty>
-		<SiteProperty caption="AWS Transient Email Grace Period" name="AWS SES Transient Email Grace Period" ReadOnly="false" Type="text" Selector="" Description="The period of time up to 30 days that email addresses with transient issues will be allowed. You must periodically review the transient email issues in the Email Block List. Transient issues older than this period will be blocked from receiving email.">14</SiteProperty>
-		<SiteProperty caption="AWS Access Key Id" name="AWS Access Key Id" ReadOnly="0" Type="Text" Selector="" Description="The access key associated with the identity you will use to communicate with the AWS Message system to retrieve bounce and complaint notifications. Use the AWS Identity and Access Management to create you credentials."></SiteProperty>
-		<SiteProperty caption="AWS Secret Access Key" name="AWS Secret Access Key" ReadOnly="0" Type="Text" Selector="" Description="The secret access key associated with the identity you will use to communicate with the AWS Message system to retrieve bounce and complaint notifications. Use the AWS Identity and Access Management to create you credentials."></SiteProperty>
-		<SiteProperty caption="AWS SQS Bounce Email Queue Endpoint" name="AWS SQS Bounce Email Queue Endpoint" ReadOnly="0" Type="Text" Selector="" Description="The URL for the AWS Message Queue you configured to store the bounce messages."></SiteProperty>
-	</Tab>
-</Form>
-]]></FormXML>
+				<Description></Description>
+				<Tab name="AWS" description="Settings that affect the AWS Bounce and Complaint notification handling.">
+					<SiteProperty caption="Allow AWS Email Bounce Processing" name="AWS SES Allow Bounce Process" ReadOnly="false" Type="boolean" Selector="" Description="(For Amazon AWS hosted sites only, requires Amazon SES Email) Use Amazon Notifications to automatically block bad email addresses from your database. When enabled, the site will check with Amazon AWS hourly and if bad email addresses where detected, the user's Allow Group Email will be disabled and the email address will be added to the site's blocked list.">0</SiteProperty>
+					<SiteProperty caption="AWS Transient Email Grace Period" name="AWS SES Transient Email Grace Period" ReadOnly="false" Type="text" Selector="" Description="The period of time up to 30 days that email addresses with transient issues will be allowed. You must periodically review the transient email issues in the Email Block List. Transient issues older than this period will be blocked from receiving email.">14</SiteProperty>
+					<SiteProperty caption="AWS Access Key Id" name="AWS Access Key Id" ReadOnly="0" Type="Text" Selector="" Description="The access key associated with the identity you will use to communicate with the AWS Message system to retrieve bounce and complaint notifications. Use the AWS Identity and Access Management to create you credentials."></SiteProperty>
+					<SiteProperty caption="AWS Secret Access Key" name="AWS Secret Access Key" ReadOnly="0" Type="Text" Selector="" Description="The secret access key associated with the identity you will use to communicate with the AWS Message system to retrieve bounce and complaint notifications. Use the AWS Identity and Access Management to create you credentials."></SiteProperty>
+					<SiteProperty caption="AWS SQS Bounce Email Queue Endpoint" name="AWS SQS Bounce Email Queue Endpoint" ReadOnly="0" Type="Text" Selector="" Description="The URL for the AWS Message Queue you configured to store the bounce messages."></SiteProperty>
+				</Tab>
+			</Form>
+			]]></FormXML>
 		<IsInline>No</IsInline>
 		<JavascriptOnLoad></JavascriptOnLoad>
 		<JavascriptInHead></JavascriptInHead>

@@ -153,7 +153,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\receiveClientLibrary\Pop3Client.csproj">
+    <ProjectReference Include="..\Pop3Client\Pop3Client.csproj">
       <Project>{6EB93AE3-CBF9-4EBA-973E-D3C9B58D716C}</Project>
       <Name>Pop3Client</Name>
     </ProjectReference>

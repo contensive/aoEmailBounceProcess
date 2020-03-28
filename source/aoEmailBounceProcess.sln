@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "aoPopBounceProcess", "aoEmailBounceProcess\aoPopBounceProcess.vbproj", "{40863AC4-40E4-41C1-AC19-138F71B3B7B0}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "aoPopBounceProcess", "aoPopBounceProcess\aoPopBounceProcess.vbproj", "{40863AC4-40E4-41C1-AC19-138F71B3B7B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pop3Client", "receiveClientLibrary\Pop3Client.csproj", "{6EB93AE3-CBF9-4EBA-973E-D3C9B58D716C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pop3Client", "Pop3Client\Pop3Client.csproj", "{6EB93AE3-CBF9-4EBA-973E-D3C9B58D716C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoSesBounceProcess", "aoProcessEmail\aoSesBounceProcess.csproj", "{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoSesBounceProcess", "aoSesBounceProcess\aoSesBounceProcess.csproj", "{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aoEmailBounceProcess", "aoEmailBounceProcess\aoEmailBounceProcess.csproj", "{D10EFC24-1BC2-4488-BCC0-39FAE25F1C3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AE21903-7E00-49BF-8F25-2E8BA7B6981E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D10EFC24-1BC2-4488-BCC0-39FAE25F1C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D10EFC24-1BC2-4488-BCC0-39FAE25F1C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D10EFC24-1BC2-4488-BCC0-39FAE25F1C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D10EFC24-1BC2-4488-BCC0-39FAE25F1C3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
