@@ -23,6 +23,9 @@ namespace Contensive.Addons.EmailBounceProcess {
         /// <returns></returns>
         public override object Execute(Contensive.BaseClasses.CPBaseClass cp) {
             try {
+                //first set each people record to not allowgroupemail if they are in the email bounce list and aren't transient
+                removeAllowGroupEmailFromPermanentFails(cp);
+                //
                 const string spAwsSecretAccessKey = "AWS Secret Access Key";
                 const string spAwsAccessKeyId = "AWS Access Key Id";
                 const string spAwsSQSBounceEmailQueueEndpoint = "AWS SQS Bounce Email Queue Endpoint";
@@ -67,7 +70,8 @@ namespace Contensive.Addons.EmailBounceProcess {
                                 // -- process SES bounce notification.
                                 AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(notification.message);
                                 processSesBounceNotificationMessage(cp, message);
-                            } else if (notification.type == null) {
+                            }
+                            else if (notification.type == null) {
                                 //
                                 // --unknown type, assume valid message
                                 AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(msg.Body);
@@ -95,7 +99,8 @@ namespace Contensive.Addons.EmailBounceProcess {
                     }
                 }
                 return string.Empty;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 cp.Site.ErrorReport(ex);
                 return string.Empty;
             }
@@ -153,7 +158,8 @@ namespace Contensive.Addons.EmailBounceProcess {
                     // -- found in bounce list already, update
                     cs.SetField("details", bounceMsg);
                     cs.SetField("transient", "0");
-                } else {
+                }
+                else {
                     //
                     // -- add to bounce list
                     cs.Close();
@@ -196,18 +202,21 @@ namespace Contensive.Addons.EmailBounceProcess {
                         //
                         cs.Close();
                         permanentFail(cp, emailAddress, bounceMsg);
-                    } else {
+                    }
+                    else {
                         //
                         // not past deadline, update details 
                         //
                         cs.SetField("details", bounceMsg);
                     }
-                } else {
+                }
+                else {
                     //
                     // previous permanent failure - do nothing
                     //
                 }
-            } else {
+            }
+            else {
                 //
                 // no previous failures, add them
                 //
@@ -220,6 +229,42 @@ namespace Contensive.Addons.EmailBounceProcess {
                 }
             }
             cs.Close();
+        }
+        //==========================================================================================
+        /// <summary>
+        /// for each user in bounce email list that is not transient, set that their allowbulkemail to false
+        /// </summary>
+        /// <param name="cp"></param>
+        private static void removeAllowGroupEmailFromPermanentFails(CPBaseClass cp) {
+            try {
+                using (CPCSBaseClass cs = cp.CSNew()) {
+                    if (cs.Open("email bounce list", "transient=0")) {
+                        do {
+                            string emailAddress = "";
+                            string recordName = cs.GetText("name");
+
+                            //takes into account records with names like "John Doe <test@gmail.com>"
+                            int subStart = recordName.IndexOf("<");
+                            int subEnd = recordName.IndexOf(">");
+                            //-2 so the final ">" is not included and thestarting "<" is not included
+                            int SubLen = (recordName.Length - subStart) - 2;
+                            //checks if the bounce list name name has both "<" and ">" in it
+                            if ((subStart != -1) && (subEnd != -1)) {
+                                emailAddress = recordName.Substring((subStart + 1), SubLen);
+                            }
+                            else {
+                                emailAddress = recordName;
+                            }
+                            cp.Db.ExecuteNonQuery("update ccmembers set allowBulkEmail=0 where email=" + cp.Db.EncodeSQLText(emailAddress));
+                            cs.GoNext();
+                        } while (cs.OK());
+                    }
+                    cs.Close();
+                }
+            }
+            catch (Exception ex) {
+                cp.Site.ErrorReport(ex);
+            }
         }
         /// <summary>Represents the bounce or complaint notification stored in Amazon SQS.</summary>
         class AmazonSqsNotification {
