@@ -23,6 +23,10 @@ namespace Contensive.Addons.EmailBounceProcess {
         /// <returns></returns>
         public override object Execute(Contensive.BaseClasses.CPBaseClass cp) {
             try {
+                //
+                cp.Utils.AppendLog("AwsSesProcessClass.execute, enter");
+                //cp.Log.Info("AwsSesProcessClass.execute, enter");
+                //
                 //first set each people record to not allowgroupemail if they are in the email bounce list and aren't transient
                 removeAllowGroupEmailFromPermanentFails(cp);
                 //
@@ -35,11 +39,9 @@ namespace Contensive.Addons.EmailBounceProcess {
                     //
                     // -- aws keys, use the server config, but allow over-ride by site property
                     string awsAccessKeyId = cp.Site.GetText(spAwsAccessKeyId);
-                    if (string.IsNullOrEmpty(awsAccessKeyId)) {
-                        awsAccessKeyId = cp.ServerConfig.awsAccessKey;
-                    }
                     string awsSecretAccessKey = cp.Site.GetText(spAwsSecretAccessKey);
-                    if (string.IsNullOrEmpty(awsSecretAccessKey)) {
+                    if (string.IsNullOrWhiteSpace(awsAccessKeyId)) {
+                        awsAccessKeyId = cp.ServerConfig.awsAccessKey;
                         awsSecretAccessKey = cp.ServerConfig.awsSecretAccessKey;
                     }
                     //
@@ -62,6 +64,8 @@ namespace Contensive.Addons.EmailBounceProcess {
                             break;
                         }
                         foreach (Message msg in receiveMessageResponse.Messages) {
+                            //
+                            cp.Log.Info("AwsSesProcessClass.execute, read sqs message [" + msg.Body + "]");
                             //
                             // -- convert the Amazon SNS message into a JSON object.
                             AmazonSqsNotification notification = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSqsNotification>(msg.Body);
@@ -87,6 +91,8 @@ namespace Contensive.Addons.EmailBounceProcess {
                         }
                     }
                     //
+                    cp.Log.Info("AwsSesProcessClass.execute, convert transient issues to permanent");
+                    //
                     // -- transient bounces beyond the grace period - convert to permanent failures
                     using (CPCSBaseClass cs = cp.CSNew()) {
                         if (cs.Open("email bounce list", "(transient=1)and(transientFixDeadline<" + cp.Db.EncodeSQLDate(DateTime.Now) + ")")) {
@@ -98,6 +104,9 @@ namespace Contensive.Addons.EmailBounceProcess {
                         cs.Close();
                     }
                 }
+                //
+                cp.Log.Info("AwsSesProcessClass.execute, exit");
+                //
                 return string.Empty;
             }
             catch (Exception ex) {
@@ -264,6 +273,7 @@ namespace Contensive.Addons.EmailBounceProcess {
             }
             catch (Exception ex) {
                 cp.Site.ErrorReport(ex);
+                throw;
             }
         }
         /// <summary>Represents the bounce or complaint notification stored in Amazon SQS.</summary>

@@ -66,3 +66,4 @@ del "%collectionName%.zip" /Q
 xcopy "%collectionName%.zip" "%deploymentFolderRoot%%deploymentNumber%" /Y
 cd ..\..\scripts
 
+pause

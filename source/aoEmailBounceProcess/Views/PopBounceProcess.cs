@@ -6,8 +6,6 @@ using System.Linq;
 namespace Contensive.Addons.EmailBounceProcess {
     public class PopProcessClass : AddonBaseClass {
         // 
-        private readonly string strBuffer;
-        // 
         // ===========================================================================================
         /// <summary>
         /// if bounce configured, read all bounce email in and act on the sender
@@ -28,23 +26,16 @@ namespace Contensive.Addons.EmailBounceProcess {
         // 
         public void bounceProcess(Contensive.BaseClasses.CPBaseClass cp) {
             try {
-                // Dim popClient As Pop3.Pop3Client
                 CPCSBaseClass CS = cp.CSNew();
-                // Dim Ptr As Integer
-                // Dim Copy As String
                 string MessageText;
-                string MessageHeaders;
-                // Dim MessageUID As String
                 string[] FilterLines;
                 string[] FilterText = Array.Empty<string>();
                 int[] FilterType = Array.Empty<int>();
-                // Dim FS As New FileSystemClass
                 int LinePtr;
                 string[] LineSplit;
                 int FilterLineCnt=0;
                 string Filter;
                 int BounceType;
-                // Dim SQL As String
                 string EmailAddress;
                 string PopServer;
                 int popPort;
@@ -111,7 +102,6 @@ namespace Contensive.Addons.EmailBounceProcess {
                         // 
                         // Retrieve the emails
                         // 
-                        string tmp = "";
                         int MessageCnt;
                         string headerList;
                         OpenPop.Mime.Message msg;
@@ -161,7 +151,6 @@ namespace Contensive.Addons.EmailBounceProcess {
                                                     EmailAddress = MessageText.Replace(amazonMsg, "");
                                             }
                                             ActionTaken = "no action";
-                                            MessageHeaders = ""; // POP1.MessageHeaders
                                             if (EmailAddress == "") {
                                                 // 
                                                 cp.CdnFiles.Append(bounceLogPathPage, "\n\r" + "email" + msgPtr + "-" + "email address was blank");
