@@ -61,16 +61,16 @@ namespace Contensive.Addons.SesBounceProcess {
                         foreach (Message msg in receiveMessageResponse.Messages) {
                             //
                             // -- convert the Amazon SNS message into a JSON object.
-                            AmazonSqsNotification notification = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSqsNotification>(msg.Body);
+                            AmazonSqsNotification notification = cp.JSON.Deserialize<AmazonSqsNotification>(msg.Body);
                             if (notification.type == "Notification") {
                                 //
                                 // -- process SES bounce notification.
-                                AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(notification.message);
+                                AmazonSesBounceNotification message = cp.JSON.Deserialize<AmazonSesBounceNotification>(notification.message);
                                 processSesBounceNotificationMessage(cp, message);
                             } else if (notification.type == null) {
                                 //
                                 // --unknown type, assume valid message
-                                AmazonSesBounceNotification message = Newtonsoft.Json.JsonConvert.DeserializeObject<AmazonSesBounceNotification>(msg.Body);
+                                AmazonSesBounceNotification message = cp.JSON.Deserialize<AmazonSesBounceNotification>(msg.Body);
                                 processSesBounceNotificationMessage(cp, message);
                             }
                             //
